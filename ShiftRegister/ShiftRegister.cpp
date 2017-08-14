@@ -3,13 +3,20 @@
 #include <string.h>
 #include <Arduino.h>
 
-ShiftRegister::ShiftRegister(uint8_t outputPin, uint8_t bits, uint8_t clockPin, uint8_t serialParallelPin)
+ShiftRegister::ShiftRegister(uint8_t outputPin,
+                             uint8_t bits,
+                             uint8_t clockPin,
+                             uint8_t serialParallelPin,
+                             uint8_t serialValue,
+                             uint8_t parallelValue)
     : _outputPin(outputPin)
     , _bits(bits)
     , _clockPin(clockPin)
     , _serialParallelPin(serialParallelPin)
+    , _serialValue(serialValue)
+    , _parallelValue(parallelValue)
+    , _outputSize(byte(ceil(bits / 8.0)))
 {
-    _outputSize = byte(ceil(bits / 8.0));
     _output = new uint8_t[_outputSize];
 
     pinMode(outputPin, INPUT);
@@ -36,8 +43,8 @@ bool ShiftRegister::read(uint8_t* output, uint8_t size)
 
     memset(_output, 0, _outputSize);
 
-    digitalWrite(_serialParallelPin, HIGH);
-    digitalWrite(_serialParallelPin, LOW);
+    digitalWrite(_serialParallelPin, _parallelValue);
+    digitalWrite(_serialParallelPin, _serialValue);
 
     for (int i = _bits - 1; i >= 0; i--) {
         digitalWrite(_clockPin, LOW);
